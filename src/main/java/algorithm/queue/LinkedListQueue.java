@@ -1,4 +1,4 @@
-package queue;
+package algorithm.queue;
 
 public class LinkedListQueue<T> {
 

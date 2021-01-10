@@ -1,4 +1,4 @@
-package sort;
+package algorithm.sort;
 
 public class InsertSort {
     public static void sort(Comparable[] a) {

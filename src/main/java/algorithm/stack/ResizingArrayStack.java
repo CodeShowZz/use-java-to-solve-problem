@@ -1,4 +1,4 @@
-package stack;
+package algorithm.stack;
 
 public class ResizingArrayStack<T> {
 
