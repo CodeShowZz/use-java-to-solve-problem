@@ -1,4 +1,4 @@
-package com.concurrency.producerandconsumerproblem;
+package multithread.producerandconsumerproblem;
 
 import java.util.ArrayList;
 import java.util.List;

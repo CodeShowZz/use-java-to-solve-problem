@@ -1,4 +1,4 @@
-package com.concurrency.threadpool.fourtypethreadpool;
+package multithread.threadpool.fourtypethreadpool;
 
 import java.util.concurrent.*;
 

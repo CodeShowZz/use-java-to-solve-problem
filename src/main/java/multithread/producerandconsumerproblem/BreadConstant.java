@@ -1,4 +1,4 @@
-package com.concurrency.producerandconsumerproblem;
+package multithread.producerandconsumerproblem;
 
 public class BreadConstant {
 

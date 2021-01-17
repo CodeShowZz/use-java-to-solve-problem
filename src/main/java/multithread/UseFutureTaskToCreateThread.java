@@ -1,4 +1,4 @@
-package com.concurrency;
+package multithread;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;

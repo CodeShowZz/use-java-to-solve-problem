@@ -1,14 +1,14 @@
-package com.concurrency.producerandconsumerproblem;
+package multithread.producerandconsumerproblem;
 
 import java.util.List;
 
-public class Consumer implements Runnable {
+public class Producer implements Runnable {
 
     private int number;
 
     private List<String> breads;
 
-    public Consumer(int number, List<String> breads) {
+    public Producer(int number, List<String> breads) {
         this.number = number;
         this.breads = breads;
     }
@@ -17,18 +17,18 @@ public class Consumer implements Runnable {
     public void run() {
         while (true) {
             synchronized (breads) {
-                if (breads.size() == 0) {
+                if (breads.size() == BreadConstant.MAX_BREAD_COUNT) {
                     try {
                         breads.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    System.out.println("consumer" + number + " consume the number " + (breads.size() - 1) + " bread");
-                    breads.remove(breads.size() - 1);
+                    breads.add("bread");
+                    System.out.println("producer" + number + " produce the number " + (breads.size() - 1) + " bread");
                 }
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -37,3 +37,6 @@ public class Consumer implements Runnable {
         }
     }
 }
+
+
+
