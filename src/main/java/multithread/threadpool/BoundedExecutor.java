@@ -6,6 +6,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 
+/**
+ * 通过信号量控制提交到线程池的任务
+ */
 @ThreadSafe
 public class BoundedExecutor {
 
