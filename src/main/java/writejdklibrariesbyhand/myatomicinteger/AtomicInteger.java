@@ -1,27 +1,18 @@
-package multithread.unsafe;
+package writejdklibrariesbyhand.myatomicinteger;
 
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 
-public class UseUnsafeToSimulateAtomicInteger {
+/**
+ * 使用CAS来编写一个简易版AtomicInteger
+ *
+ * @author junlin_huang
+ * @create 2021-01-28 上午1:48
+ **/
 
-    public static void main(String[] args) throws InterruptedException {
+public class AtomicInteger {
 
-        MyAtomicInteger myAtomicInteger = new MyAtomicInteger();
-        for (int i = 0; i < 10; i++) {
-            new Thread(() -> {
-                for (int j = 0; j < 100; j++) {
-                    myAtomicInteger.increment();
-                }
-            }).start();
-        }
-        Thread.sleep(1000);
-        System.out.println(myAtomicInteger.get());
-    }
-}
-
-class MyAtomicInteger {
     private volatile int value;
 
     private long valueOffset;
@@ -40,7 +31,7 @@ class MyAtomicInteger {
     }
 
 
-    public MyAtomicInteger() {
+    public AtomicInteger() {
 
     }
 
@@ -55,4 +46,5 @@ class MyAtomicInteger {
     public int get() {
         return value;
     }
+
 }
