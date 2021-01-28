@@ -18,17 +18,41 @@ import java.util.concurrent.locks.LockSupport;
 
 public class AQS {
 
+    /**
+     * 锁状态
+     */
     private volatile int state;
 
+    /**
+     * 队列头节点
+     */
     private volatile Node head;
 
+    /**
+     * 对列尾节点
+     */
     private volatile Node tail;
 
+    /**
+     * unsafe
+     */
     private static final Unsafe unsafe;
+    /**
+     * state偏移量
+     */
     private static final long stateOffset;
+    /**
+     * head偏移量
+     */
     private static final long headOffset;
+    /**
+     * tail偏移量
+     */
     private static final long tailOffset;
 
+    /**
+     * 获取unsafe 使用unsafe获取字段偏移量
+     */
     static {
         try {
             Field unsafeField = Unsafe.class.getDeclaredFields()[0];
@@ -45,17 +69,33 @@ public class AQS {
         }
     }
 
+    /**
+     * 队列节点
+     */
     class Node {
 
+        /**
+         * 节点的上一个节点
+         */
         private volatile Node prev;
 
+        /**
+         * 节点的下一个节点
+         */
         private volatile Node next;
 
+        /**
+         * 节点指代的线程
+         */
         private volatile Thread thread;
 
     }
 
-
+    /**
+     * 获取状态
+     *
+     * @return
+     */
     private int getState() {
         return state;
     }
@@ -70,12 +110,18 @@ public class AQS {
         acquireQueued(enq());
     }
 
+    /**
+     * 释放锁资源,并唤醒队列中第一个等待的线程
+     */
     public final void release() {
         state = 0;
         unparkSuccessor();
     }
 
 
+    /**
+     * 唤醒队列中第一个等待的线程
+     */
     private void unparkSuccessor() {
         if (head != null && head.next != null) {
             LockSupport.unpark(head.next.thread);
@@ -98,10 +144,20 @@ public class AQS {
         return false;
     }
 
+    /**
+     * 队列是否还没初始化
+     *
+     * @return
+     */
     public boolean isQueueEmpty() {
         return head == null || head.next == null;
     }
 
+    /**
+     * 是否该线程是第一个等待的线程
+     *
+     * @return
+     */
     public boolean isFirstNode() {
         return head.next.thread == Thread.currentThread();
     }
@@ -148,28 +204,53 @@ public class AQS {
         }
     }
 
+    /**
+     * 将头节点设置为该节点
+     *
+     * @param node
+     */
     private void setHead(Node node) {
         head = node;
         node.thread = null;
         node.prev = null;
     }
 
+    /**
+     * 线程挂起
+     */
     private void park() {
         LockSupport.park(this);
     }
 
-
+    /**
+     * CAS设置状态
+     *
+     * @param expect
+     * @param update
+     * @return
+     */
     protected final boolean compareAndSetState(int expect, int update) {
         return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
     }
 
+    /**
+     * CAS设置队列头部
+     *
+     * @param update
+     * @return
+     */
     private final boolean compareAndSetHead(Node update) {
         return unsafe.compareAndSwapObject(this, headOffset, null, update);
     }
 
+    /**
+     * CAS设置队列尾部
+     *
+     * @param expect
+     * @param update
+     * @return
+     */
     private final boolean compareAndSetTail(Node expect, Node update) {
         return unsafe.compareAndSwapObject(this, tailOffset, expect, update);
     }
-
-
 }
