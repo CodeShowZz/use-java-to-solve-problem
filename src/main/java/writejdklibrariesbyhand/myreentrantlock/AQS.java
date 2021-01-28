@@ -172,7 +172,7 @@ public class AQS {
         node.thread = Thread.currentThread();
         for (; ; ) {
             Node t = tail;
-            if (t == null) {
+            if (t == null) { //还没初始化队列,建立队列
                 if (compareAndSetHead(new Node()))
                     tail = head;
             } else {
