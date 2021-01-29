@@ -13,13 +13,18 @@ import java.lang.reflect.Field;
 
 public class AtomicInteger {
 
+    /**
+     * 值
+     */
     private volatile int value;
 
     private long valueOffset;
 
     private Unsafe unsafe;
 
-    {
+    /**
+     * 初始化unsafe 及相应的offset
+     */ {
         try {
             Field unsafeField = Unsafe.class.getDeclaredFields()[0];
             unsafeField.setAccessible(true);
@@ -35,6 +40,9 @@ public class AtomicInteger {
 
     }
 
+    /**
+     * 递增值
+     */
     public void increment() {
         int currentValue;
         do {
@@ -43,6 +51,11 @@ public class AtomicInteger {
 
     }
 
+    /**
+     * 获取值
+     *
+     * @return
+     */
     public int get() {
         return value;
     }
