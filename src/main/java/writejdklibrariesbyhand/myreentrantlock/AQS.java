@@ -65,6 +65,10 @@ public abstract class AQS {
         }
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
     /**
      * 队列节点
      */
@@ -107,10 +111,33 @@ public abstract class AQS {
     }
 
     /**
-     * 释放锁资源,并唤醒队列中第一个等待的线程
+     * 每次可以由多个线程能够执行完这个程序逻辑,其他线程会阻塞在其中的某个环节中
+     */
+    public final void acquireShared() {
+        if (tryAcquireShared()) {
+            return;
+        }
+        acquireQueuedShared(enq());
+    }
+
+    /**
+     * 释放锁,并唤醒队列中第一个等待的线程
      */
     public final void release() {
         state = 0;
+        unparkSuccessor();
+    }
+
+
+    /**
+     * 释放锁,但有可能有多个线程同时释放,所以要使用CAS,释放成功后唤醒伪节点后的线程
+     */
+    public final void releaseShared() {
+        for (; ; ) {
+            if (compareAndSetState(state, state + 1)) {
+                break;
+            }
+        }
         unparkSuccessor();
     }
 
@@ -126,11 +153,18 @@ public abstract class AQS {
 
 
     /**
-     * 由子类负责实现如何抢占锁
+     * 由子类负责实现如何抢占独占锁
      *
      * @return
      */
     public boolean tryAcquire() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * 由子类负责实现如何抢占共享锁
+     */
+    public boolean tryAcquireShared() {
         throw new UnsupportedOperationException();
     }
 
@@ -178,9 +212,9 @@ public abstract class AQS {
 
 
     /**
-     * 节点尝试获取资源,此时只有伪节点的下一个节点有可能能够获取资源成功,如果这次没有获取成功,则挂起.
-     * 等获得资源的线程释放资源后,会唤醒这个节点.其余节点都是进入挂起状态.
-     * 等伪节点的下一个节点获取到资源了,我们就把它变成新的伪节点,其实就相当于移出队列.它的下一个节点就成为了第一个等待资源的节点.
+     * 节点尝试获取锁,此时只有伪节点的下一个节点有可能能够获取锁成功,如果这次没有获取成功,则挂起.
+     * 等获得锁的线程释放锁后,会唤醒这个节点.其余节点都是进入挂起状态.
+     * 等伪节点的下一个节点获取到锁了,我们就把它变成新的伪节点,其实就相当于移出队列.它的下一个节点就成为了第一个等待锁的节点.
      *
      * @param node
      */
@@ -194,6 +228,26 @@ public abstract class AQS {
             park();
         }
     }
+
+    /**
+     * 节点尝试获取锁,此时只有伪节点的下一个节点有可能能够获取锁成功,如果这次没有获取成功,则挂起.
+     * 但是在共享模式下,多个线程可以共享一个锁,所以当伪节点再次更换时,它的下一个节点应该立即被唤醒来尝试获取锁.
+     * 等伪节点的下一个节点获取到锁了,我们就把它变成新的伪节点,其实就相当于移出队列.它的下一个节点就成为了第一个等待锁的节点.
+     *
+     * @param node
+     */
+    final void acquireQueuedShared(Node node) {
+        for (; ; ) {
+            final Node p = node.prev;
+            if (p == head && tryAcquireShared()) {
+                setHead(node);
+                unparkSuccessor();
+                return;
+            }
+            park();
+        }
+    }
+
 
     /**
      * 将头节点设置为该节点

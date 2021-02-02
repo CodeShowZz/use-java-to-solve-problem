@@ -1,38 +1,37 @@
 package writejdklibrariesbyhand.myreentrantlock;
 
-
 /**
- * 可重入锁
- * 1.实现公平(使用FairSync)和非公平(使用NonFairSync)版本,借助AQS维护状态和队列
- * 2.暂时还未实现可重入
+ * 共享锁实现
+ * 1.有公平和非公平两种实现
+ *
+ * @author junlin_huang
+ * @create 2021-02-02 下午11:47
  **/
-public class ReentrantLock {
+
+public class ShareLock {
+
 
     /**
      * 负责定义线程之间如何进行锁的抢占
      */
     private Sync sync;
 
-    public ReentrantLock() {
-        this.sync = new NonFairSync();
+
+    public ShareLock(int require) {
+        sync = new FairSync(require);
     }
 
-    public ReentrantLock(boolean fair) {
-        sync = (fair == true ? new FairSync() : new NonFairSync());
+    public ShareLock(boolean fair, int require) {
+        sync = (fair == true ? new FairSync(require) : new NonFairSync(require));
     }
 
-    /**
-     * 获取锁
-     */
+
     public void lock() {
-        sync.acquire();
+        sync.acquireShared();
     }
 
-    /**
-     * 解锁
-     */
     public void unlock() {
-        sync.release();
+        sync.releaseShared();
     }
 
     /**
@@ -46,11 +45,16 @@ public class ReentrantLock {
      * 公平版抢占
      */
     public class FairSync extends Sync {
+
+        public FairSync(int require) {
+            super.setState(require);
+        }
+
         @Override
-        public boolean tryAcquire() {
+        public boolean tryAcquireShared() {
             int state = getState();
-            if (state == 0) {
-                if ((isQueueEmpty() || isFirstNode()) && compareAndSetState(0, 1)) {
+            if (state > 0) {
+                if ((isQueueEmpty() || isFirstNode()) && compareAndSetState(state, state - 1)) {
                     return true;
                 }
             }
@@ -62,9 +66,14 @@ public class ReentrantLock {
      * 非公平版抢占
      */
     public class NonFairSync extends Sync {
+
+        public NonFairSync(int require) {
+            super.setState(require);
+        }
+
         @Override
-        public boolean tryAcquire() {
-            return tryNonfairAcquire();
+        public boolean tryAcquireShared() {
+            return tryNonfairAcquireShared();
         }
 
         /**
@@ -73,10 +82,10 @@ public class ReentrantLock {
          *
          * @return
          */
-        public final boolean tryNonfairAcquire() {
+        public final boolean tryNonfairAcquireShared() {
             int state = getState();
-            if (state == 0) {
-                if (compareAndSetState(0, 1)) {
+            if (state > 0) {
+                if (compareAndSetState(state, state - 1)) {
                     return true;
                 }
             }
@@ -84,4 +93,6 @@ public class ReentrantLock {
         }
 
     }
+
+
 }

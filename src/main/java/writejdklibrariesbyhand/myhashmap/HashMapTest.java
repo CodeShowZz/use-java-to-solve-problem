@@ -1,7 +1,5 @@
 package writejdklibrariesbyhand.myhashmap;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author junlin_huang
@@ -12,10 +10,9 @@ public class HashMapTest {
 
     //   e.hash & (newCap - 1)
     public static void main(String[] args) {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("1", "2");
-        hashMap.put("1", "3");
-        System.out.println(hashMap);
-        System.out.println(100 & 64);
+        HashMap<String, String> hashMap = new HashMap<>();
+        for (int i = 0; i < 10000; i++) {
+            hashMap.put(String.valueOf(i), String.valueOf(i));
+        }
     }
 }

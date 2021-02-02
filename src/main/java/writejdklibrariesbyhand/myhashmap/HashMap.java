@@ -1,4 +1,5 @@
 package writejdklibrariesbyhand.myhashmap;
+
 /**
  * 写一个简易版的HashMap
  * 1 理论:当一个数是 2^n 时, 任意整数对2^n取模等效于: h % 2^n = h & (2^n -1),而或操作性能比取模性能操作好
@@ -248,6 +249,7 @@ public class HashMap<K, V> {
                     }
                 }
             }
+            table = newTab;
         }
         return table;
     }
