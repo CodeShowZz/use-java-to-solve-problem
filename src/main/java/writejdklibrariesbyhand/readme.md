@@ -31,5 +31,9 @@ https://github.com/CodeShowZz/use-java-to-solve-problem/tree/master/src/main/jav
 #### ReentrantLock
 
 - 实现acquire方法和release方法,并且是公平锁
+- 实现非公平锁,将公平抢占方法和非公平抢占方法放入ReentrantLock类中
+
+#### ShareLock
+- 实现acquireShared方法和releaseShared方法,有公平锁和非公平锁两个版本
 
 
