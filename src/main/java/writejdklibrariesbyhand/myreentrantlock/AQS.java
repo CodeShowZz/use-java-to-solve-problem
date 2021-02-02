@@ -6,17 +6,13 @@ import java.lang.reflect.Field;
 import java.util.concurrent.locks.LockSupport;
 
 /**
- * 编写一个简单的AQS
- * 1.它没有重入
- * 2.目前它是公平锁
- * 3.线程不响应中断,线程没有取消等待状态
- * 4.它不像类库里面有那么多继承关系 所以它很简陋 但也更易读 后续如果学习需要 将添加更多功能
+ * AQS工具类 专门负责提供队列和队列状态的维护
  *
  * @author junlin_huang
  * @create 2021-01-27 下午10:06
  **/
 
-public class AQS {
+public abstract class AQS {
 
     /**
      * 锁状态
@@ -96,7 +92,7 @@ public class AQS {
      *
      * @return
      */
-    private int getState() {
+    public int getState() {
         return state;
     }
 
@@ -130,19 +126,14 @@ public class AQS {
 
 
     /**
-     * 当队列不存在 或者队列中只有伪头节点 并且资源空出时,能抢占到资源的线程就能使用
+     * 由子类负责实现如何抢占锁
      *
      * @return
      */
-    public final boolean tryAcquire() {
-        int state = getState();
-        if (state == 0) {
-            if ((isQueueEmpty() || isFirstNode()) && compareAndSetState(0, 1)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean tryAcquire() {
+        throw new UnsupportedOperationException();
     }
+
 
     /**
      * 队列是否还没初始化
