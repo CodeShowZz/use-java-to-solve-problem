@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * excel读取
+ *   Excel解析器
  */
 public class ExcelReader {
 
