@@ -11,23 +11,30 @@ import java.util.*;
 class Solution {
 
     public static void main(String[] args) {
-        int[] nums = { 3, -2, -4, 6, -7, 9, 2, 0, -1, -8, 7};
-        int maxSubSum = new Solution().maxSubSum(nums);
-        System.out.println(maxSubSum);
+        List<List<Integer>> res = new Solution().combinationSum(new int[]{2, 3, 6, 7}, 7);
+        System.out.println(res);
     }
 
-    public int maxSubSum(int[] nums) {
-        int pre = nums[0];
-        int maxSubSum = pre;
-        for (int i = 1; i < nums.length; i++) {
-            if (pre + nums[i] > nums[i]) {
-                pre = pre + nums[i];
-            } else {
-                pre = nums[i];
-            }
-            maxSubSum = Math.max(maxSubSum, pre);
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList();
+        combinationSum(candidates, target, new ArrayList(), ans, 0);
+        return ans;
+    }
+
+    public void combinationSum(int[] candidates, int target, List<Integer> tmp, List<List<Integer>> res, int index) {
+        if (index == candidates.length) {
+            return;
         }
-        return maxSubSum;
+        if (target == 0) {
+            res.add(new ArrayList<>(tmp));
+            return;
+        }
+        combinationSum(candidates, target, tmp, res, index + 1);
+        if (target - candidates[index] >= 0) {
+            tmp.add(candidates[index]);
+            combinationSum(candidates, target - candidates[index], tmp, res, index);
+            tmp.remove(tmp.size() - 1);
+        }
     }
 
 }
